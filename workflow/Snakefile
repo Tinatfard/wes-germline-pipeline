@@ -1,37 +1,27 @@
-# Snakefile for a small WES germline pipeline.
-# Not trying to be perfect here – just clear and usable.
+# Simple WES test : FastQC + BWA-MEM + sorted BAM.
 
 import pandas as pd
 
 configfile: "config/config.yaml"
 
-# load sample sheet
-SAMPLES_DF = pd.read_csv("config/samples.csv")
-SAMPLES = list(SAMPLES_DF["sample"])
+samples_df = pd.read_csv("config/samples.csv")
+SAMPLES = samples_df["sample"].tolist()
 
 REF = config["reference"]
-OUTDIR = config.get("outdir", "results")
-QC_DIR = config.get("qc_dir", f"{OUTDIR}/qc")
+OUTDIR = config["outdir"]
+QC_DIR = config["qc_dir"]
 
 
-def get_fastq(sample, read):
-    """
-    Helper to get FASTQ paths from the sample sheet.
-    read = 1 or 2
-    """
-    row = SAMPLES_DF.set_index("sample").loc[sample]
-    col = f"fastq{read}"
-    return row[col]
+def fq(sample, read):
+    """Return FASTQ path for a given sample and read (1 or 2)."""
+    row = samples_df.set_index("sample").loc[sample]
+    return row[f"fastq{read}"]
 
 
 rule all:
-    """
-    Final targets: one gVCF per sample.
-    """
     input:
-        expand(f"{OUTDIR}/gvcf/{{sample}}.g.vcf.gz", sample=SAMPLES)
+        expand(f"{OUTDIR}/bam/{{sample}}.sorted.bam", sample=SAMPLES)
 
 
-include: "workflow/rules/qc.smk"
-include: "workflow/rules/mapping.smk"
-include: "workflow/rules/variants.smk"
+include: "rules/qc.smk"
+include: "rules/mapping.smk"
