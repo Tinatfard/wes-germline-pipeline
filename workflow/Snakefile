@@ -1,0 +1,37 @@
+# Snakefile for a small WES germline pipeline.
+# Not trying to be perfect here – just clear and usable.
+
+import pandas as pd
+
+configfile: "config/config.yaml"
+
+# load sample sheet
+SAMPLES_DF = pd.read_csv("config/samples.csv")
+SAMPLES = list(SAMPLES_DF["sample"])
+
+REF = config["reference"]
+OUTDIR = config.get("outdir", "results")
+QC_DIR = config.get("qc_dir", f"{OUTDIR}/qc")
+
+
+def get_fastq(sample, read):
+    """
+    Helper to get FASTQ paths from the sample sheet.
+    read = 1 or 2
+    """
+    row = SAMPLES_DF.set_index("sample").loc[sample]
+    col = f"fastq{read}"
+    return row[col]
+
+
+rule all:
+    """
+    Final targets: one gVCF per sample.
+    """
+    input:
+        expand(f"{OUTDIR}/gvcf/{{sample}}.g.vcf.gz", sample=SAMPLES)
+
+
+include: "workflow/rules/qc.smk"
+include: "workflow/rules/mapping.smk"
+include: "workflow/rules/variants.smk"
