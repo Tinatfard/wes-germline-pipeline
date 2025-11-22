@@ -1,15 +1,11 @@
 # Basic config for the WES germline pipeline
 
-reference: "/path/to/reference/hg38.fa"
+reference: "/home/bio_tech/wes-germline-pipeline/hg38.fa"
 
 outdir: "results"
 qc_dir: "results/qc"
-tmp_dir: "tmp"
 
 threads:
   fastqc: 2
-  bwa: 8
-  gatk: 4
+  bwa: 2
 
-gatk:
-  haplotypecaller_extra: ""
