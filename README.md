@@ -1,15 +1,9 @@
 # wes-germline-pipeline
-This repository contains a small Snakemake workflow for germline variant calling from whole exome sequencing (WES) data.
-The goal is to provide a clear and modular example of a basic variant calling pipeline using commonly used tools.
+This repository contains a small Snakemake workflow for germline variant calling from whole-exome sequencing (WES) data.  
+I use it as a simple, modular example of a WES pipeline built around common tools (BWA, Samtools, GATK, FastQC).
 
-The workflow includes:
+## Status
 
-Quality control (FastQC)
+This is an initial version focused on single-sample WES data.  
+Planned next steps: add duplicate marking, BQSR, and basic annotation.
 
-Alignment with BWA-MEM
-
-Sorting and indexing
-
-Variant calling with GATK HaplotypeCaller (gVCF mode)
-
-The pipeline is designed to be easy to understand and extend.
