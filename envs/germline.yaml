@@ -6,8 +6,10 @@ channels:
 dependencies:
   - python=3.11
   - snakemake
+  - fastqc
   - bwa
   - samtools
-  - fastqc
+  - htslib
   - gatk4
   - pandas
+
