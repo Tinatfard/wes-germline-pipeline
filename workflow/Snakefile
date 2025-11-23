@@ -1,28 +1,40 @@
-# Simple WES test: FastQC + BWA-MEM + sorted BAM.
+# WES germline pipeline:
+# FastQC + BWA-MEM + sorted BAM + GVCF + cohort VCF
 
 import pandas as pd
 
-# Load config
 configfile: "config/config.yaml"
 
-samples_df = pd.read_csv("config/samples.csv")
-samples_df = samples_df.set_index("sample")   # Avoid repeating set_index
+# Load sample sheet
+samples_df = pd.read_csv("config/samples.csv").set_index("sample")
 SAMPLES = samples_df.index.tolist()
 
+# Global config variables
 REF = config["reference"]
 OUTDIR = config["outdir"]
 QC_DIR = config["qc_dir"]
+VAR_DIR = config.get("variants_dir", f"{OUTDIR}/variants")
 
 
 def fq(sample, read):
-    """Return FASTQ path for a given sample and read (1 or 2)."""
+    """
+    Return path to FASTQ for a given sample and read (1 or 2).
+    """
     return samples_df.loc[sample, f"fastq{read}"]
 
 
 rule all:
     input:
-        expand(f"{OUTDIR}/bam/{{sample}}.sorted.bam", sample=SAMPLES)
+        # FastQC reports
+        expand(f"{QC_DIR}/fastqc/{{sample}}_R1_fastqc.html", sample=SAMPLES),
+        expand(f"{QC_DIR}/fastqc/{{sample}}_R2_fastqc.html", sample=SAMPLES),
+        # Sorted BAMs per sample
+        expand(f"{OUTDIR}/bam/{{sample}}.sorted.bam", sample=SAMPLES),
+        # Cohort VCF
+        f"{VAR_DIR}/cohort.vcf.gz"
+
 
 # Include workflow modules
 include: "rules/qc.smk"
 include: "rules/mapping.smk"
+include: "rules/variants.smk"
