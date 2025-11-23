@@ -1,12 +1,19 @@
-# Basic config for the WES germline pipeline
+# Basic config for WES germline pipeline
 
-# Path to reference genome (FASTA, indexed with bwa + samtools faidx + bwa index)
+# Reference genome (relative to repo root)
 reference: "hg38.fa"
 
-# Output directories (relative to repo root)
+# Output directories
 outdir: "results"
 qc_dir: "results/qc"
+variants_dir: "results/variants"
 
 threads:
   fastqc: 2
-  bwa: 2
+  bwa: 4
+  gatk: 4
+
+# Extra parameters to GATK (optional)
+gatk:
+  haplotypecaller_extra: ""
+  genotypegvcfs_extra: ""
