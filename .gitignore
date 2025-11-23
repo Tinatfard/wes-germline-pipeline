@@ -1,4 +1,10 @@
+.snakemake/
 results/
-tmp/
-*.log
-.DS_Store
+data/
+hg38.fa
+hg38.fa.*
+*.bam
+*.bai
+*.vcf
+*.vcf.gz
+*.vcf.gz.tbi
